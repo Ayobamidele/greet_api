@@ -44,7 +44,7 @@ async def get_requester_info(
 	location_data = location_response.json()
 	city = location_data.get("city", "Unknown City")
  
-	weather_data = get_weather_api_url(city, weather_api_key)
+	weather_data = get_weather_api_url(city)
 	
 	print(weather_data)
 	
