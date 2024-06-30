@@ -1,8 +1,9 @@
 from fastapi import FastAPI, Request, Header, Query
 import requests
-from urllib.parse import unquote
+import os
 
 app = FastAPI()
+weather_api_key = os.environ.get("WEATHER_API_KEY")
 
 def get_name(name):
 	start_index = name.find('"')
@@ -19,6 +20,18 @@ def get_name(name):
 
 
 
+def get_weather_api_url(city):
+	url = f'https://api.weatherapi.com/v1/current.json?key={weather_api_key}&q={city}'
+	response = requests.get(url)
+	if response.status_code == 200:
+		data = response.json()
+		temperature = data['current']['temp_c']
+		return temperature
+	else:
+		return None
+
+
+
 @app.get('/api/hello')
 async def get_requester_info(
 	request: Request,
@@ -30,8 +43,10 @@ async def get_requester_info(
 	location_response = requests.get(f"https://ipapi.co/{ip}/json/")
 	location_data = location_response.json()
 	city = location_data.get("city", "Unknown City")
-	print(location_data)
-
+ 
+	weather_data = get_weather_api_url(city, weather_api_key)
+	
+	print(weather_data)
 	
 
 	return {
