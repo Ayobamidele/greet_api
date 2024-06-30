@@ -1,7 +1,23 @@
 from fastapi import FastAPI, Request, Header, Query
 import requests
+from urllib.parse import unquote
 
 app = FastAPI()
+
+def get_name(name):
+	start_index = name.find('"')
+	end_index = name.find('"', start_index + 1)
+
+	if start_index == -1 or end_index == -1:
+		start_index = name.find("'")
+		end_index = name.find("'", start_index + 1)
+
+	if start_index != -1 and end_index != -1:
+		return name[start_index + 1:end_index]
+	else:
+		return name
+
+
 
 @app.get('/api/hello')
 async def get_requester_info(
@@ -9,26 +25,25 @@ async def get_requester_info(
 	x_forwarded_for: str = Header(None),
 	visitor_name: str = Query(None, description="Name of the visitor")
 ):
-	# Get the client's IP address
-	ip = x_forwarded_for.split(',')[0].strip() if x_forwarded_for else request.client.host
-	client_host = request.client.host
-	print(client_host)
-	# Use an IP-to-location service to get the city (you can replace this with your preferred service)
-	# Example: https://ipapi.co/json/
+	ip = x_forwarded_for.split(',')[0].strip() if x_forwarded_for else request.client.host	
+	visitor_name =  get_name(visitor_name)
 	location_response = requests.get(f"https://ipapi.co/{ip}/json/")
 	location_data = location_response.json()
 	city = location_data.get("city", "Unknown City")
+	print(location_data)
 
-	# # Use a weather API to get the temperature for the detected city
+	
+
+	return {
+		"client_ip": ip,
+		"city": city,
+		"greeting": f"Hello, {visitor_name}!, the temperature is 11 degrees Celcius in {city}"
+	}
+
+
+# # Use a weather API to get the temperature for the detected city
 	# # Example: OpenWeatherMap API
 	# api_key = "YOUR_OPENWEATHERMAP_API_KEY"
 	# weather_response = requests.get(f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric")
 	# weather_data = weather_response.json()
 	# temperature = weather_data.get("main", {}).get("temp", "Unknown")
-
-	return {
-		"ip": ip,
-		"city": city,
-		# "temperature": f"{temperature}°C",
-		"visitor_name": visitor_name
-	}
