@@ -18,9 +18,12 @@ def get_name(name):
 	else:
 		return name
 
+def get_location(ip):
+	location_response = requests.get(f"https://ipapi.co/{ip}/json/")
+	return location_response.json().get("city", "Unknown City")
 
 
-def get_weather_api_url(city):
+def get_tempreture_in_celcius(city):
 	url = f'https://api.weatherapi.com/v1/current.json?key={weather_api_key}&q={city}'
 	response = requests.get(url)
 	if response.status_code == 200:
@@ -28,7 +31,7 @@ def get_weather_api_url(city):
 		temperature = data['current']['temp_c']
 		return temperature
 	else:
-		return None
+		return "Unknown"
 
 
 
@@ -36,29 +39,14 @@ def get_weather_api_url(city):
 async def get_requester_info(
 	request: Request,
 	x_forwarded_for: str = Header(None),
-	visitor_name: str = Query(None, description="Name of the visitor")
+	visitor_name: str = Query(None)
 ):
 	ip = x_forwarded_for.split(',')[0].strip() if x_forwarded_for else request.client.host	
 	visitor_name =  get_name(visitor_name)
-	location_response = requests.get(f"https://ipapi.co/{ip}/json/")
-	location_data = location_response.json()
-	city = location_data.get("city", "Unknown City")
- 
-	weather_data = get_weather_api_url(city)
-	
-	print(weather_data)
-	
-
+	city = get_location(ip)
+	celcius = get_tempreture_in_celcius(city)
 	return {
 		"client_ip": ip,
 		"city": city,
-		"greeting": f"Hello, {visitor_name}!, the temperature is 11 degrees Celcius in {city}"
+		"greeting": f"Hello, {visitor_name}!, the temperature is {celcius} degrees Celcius in {city}"
 	}
-
-
-# # Use a weather API to get the temperature for the detected city
-	# # Example: OpenWeatherMap API
-	# api_key = "YOUR_OPENWEATHERMAP_API_KEY"
-	# weather_response = requests.get(f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric")
-	# weather_data = weather_response.json()
-	# temperature = weather_data.get("main", {}).get("temp", "Unknown")
