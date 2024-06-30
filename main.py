@@ -34,6 +34,11 @@ def get_tempreture_in_celcius(city):
 		return "Unknown"
 
 
+@app.get("/")
+def home():
+	return {
+		"message": "Hey There👋. Welcome to Greet App."
+	}
 
 @app.get('/api/hello')
 async def get_requester_info(
@@ -50,3 +55,4 @@ async def get_requester_info(
 		"city": city,
 		"greeting": f"Hello, {visitor_name}!, the temperature is {celcius} degrees Celcius in {city}"
 	}
+
