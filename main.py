@@ -20,15 +20,16 @@ def get_name(name):
 
 def get_location(ip):
 	location_response = requests.get(f"https://ipapi.co/{ip}/json/")
-	return f'{location_response.json().get("latitude", "Unknown Latitude")}, {location_response.json().get("longitude", "Unknown Longitude")}'
+	return location_response.json().get("city", "Unknown City")
 
 
-def get_tempreture_in_celcius(lat_long):
-	url = f'https://api.weatherapi.com/v1/current.json?key={weather_api_key}&q={lat_long}'
+def get_tempreture_in_celcius(city):
+	url = f'https://api.weatherapi.com/v1/current.json?key={weather_api_key}&q={city}'
 	response = requests.get(url)
 	if response.status_code == 200:
 		data = response.json()
-		return (data['current']['temp_c'], data['location']['name'])
+		temperature = data['current']['temp_c']
+		return temperature
 	else:
 		return "Unknown"
 
