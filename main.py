@@ -49,7 +49,7 @@ async def get_requester_info(
 	ip = x_forwarded_for.split(',')[0].strip() if x_forwarded_for else request.client.host	
 	visitor_name =  get_name(visitor_name)
 	city = get_location(ip)
-	celcius = get_tempreture_in_celcius(city)
+	celcius = int(get_tempreture_in_celcius(city))
 	return {
 		"client_ip": ip,
 		"city": city,
