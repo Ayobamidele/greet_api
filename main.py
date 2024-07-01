@@ -18,20 +18,20 @@ def get_name(name):
 	else:
 		return name
 
-def get_location(ip):
-	location_response = requests.get(f"https://ipapi.co/{ip}/json/")
-	return location_response.json().get("city", "Unknown City")
-
-
-def get_tempreture_in_celcius(city):
+def get_tempreture_location(city):
 	url = f'https://api.weatherapi.com/v1/current.json?key={weather_api_key}&q={city}'
 	response = requests.get(url)
 	if response.status_code == 200:
 		data = response.json()
-		temperature = data['current']['temp_c']
-		return temperature
+		return {
+			"temperature": data['current']['temp_c'],
+			"city": data['location']['region']
+		}
 	else:
-		return "Unknown"
+		return {
+	  		"temperature": "Unknown",
+			"city": "Unknown"
+		}
 
 
 @app.get("/")
@@ -48,11 +48,10 @@ async def get_requester_info(
 ):
 	ip = x_forwarded_for.split(',')[0].strip() if x_forwarded_for else request.client.host	
 	visitor_name =  get_name(visitor_name)
-	city = get_location(ip)
-	celcius = get_tempreture_in_celcius(city)
+	data = get_tempreture_location(ip)
 	return {
 		"client_ip": ip,
-		"city": city,
-		"greeting": f"Hello, {visitor_name}!, the temperature is {celcius} degrees Celcius in {city}"
+		"city": data['city'],
+		"greeting": f"Hello, {visitor_name}!, the temperature is {data['tempreture']} degrees Celcius in {data['city']}"
 	}
 
