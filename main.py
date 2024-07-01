@@ -28,8 +28,7 @@ def get_tempreture_in_celcius(lat_long):
 	response = requests.get(url)
 	if response.status_code == 200:
 		data = response.json()
-		temperature = data['current']['temp_c']
-		return temperature
+		return (data['current']['temp_c'], data['location']['name'])
 	else:
 		return "Unknown"
 
