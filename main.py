@@ -52,6 +52,6 @@ async def get_requester_info(
 	return {
 		"client_ip": ip,
 		"city": data['city'],
-		"greeting": f"Hello, {visitor_name}!, the temperature is {data['tempreture']} degrees Celcius in {data['city']}"
+		"greeting": f"Hello, {visitor_name}!, the temperature is {data['temperature']} degrees Celcius in {data['city']}"
 	}
 
