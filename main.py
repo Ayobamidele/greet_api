@@ -37,7 +37,7 @@ def get_tempreture_location(city):
 @app.get("/")
 def home():
 	return {
-		"message": "Hey There👋. Welcome to Greet App."
+		"message": "Hey There👋. Welcome to Greet App. By Ayobamidele Ewetuga @ https://github.com/Ayobamidele"
 	}
 
 @app.get('/api/hello')
